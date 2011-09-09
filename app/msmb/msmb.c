@@ -22,7 +22,7 @@
  */
 #include <app.h>
 #include <debug.h>
-#include <app/tests.h>
+#include <app/msmb.h>
 #include <compiler.h>
 
 #if defined(WITH_LIB_CONSOLE)
