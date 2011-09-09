@@ -7,6 +7,9 @@ CPU := generic
 INCLUDES += \
 	-I$(LOCAL_DIR)/include
 
+CFLAGS += \
+	-g -ggdb
+
 OBJS += \
 	$(LOCAL_DIR)/debug.o \
 	$(LOCAL_DIR)/platform.o \
