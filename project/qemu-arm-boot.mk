@@ -1,4 +1,5 @@
-# top level project rules for the qemu-arm-test project
+# top level project rules for the qemu-arm-boot project
+# add bootloader commands to the shell
 #
 LOCAL_DIR := $(GET_LOCAL_DIR)
 
