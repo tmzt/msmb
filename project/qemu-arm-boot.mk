@@ -5,6 +5,6 @@ LOCAL_DIR := $(GET_LOCAL_DIR)
 
 TARGET := qemu-arm
 MODULES += \
-	app/tests \
+	app/msmb \
 	app/shell
  

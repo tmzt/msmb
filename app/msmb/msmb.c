@@ -29,18 +29,17 @@
 #include <lib/console.h>
 
 STATIC_COMMAND_START
-		{ "printf_tests", NULL, (console_cmd)&printf_tests },
-		{ "thread_tests", NULL, (console_cmd)&thread_tests },
-STATIC_COMMAND_END(tests);
+		{ "hellomsmb", NULL, (console_cmd)&hellomsmb },
+STATIC_COMMAND_END(msmb);
 
 #endif
 
-static void tests_init(const struct app_descriptor *app)
+static void msmb_init(const struct app_descriptor *app)
 {
 }
 
-APP_START(tests)
-	.init = tests_init,
+APP_START(msmb)
+	.init = msmb_init,
 	.flags = 0,
 APP_END
 

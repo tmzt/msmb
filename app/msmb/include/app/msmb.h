@@ -20,11 +20,10 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-#ifndef __APP_TESTS_H
-#define __APP_TESTS_H
+#ifndef __APP_MSMB_H
+#define __APP_MSMB_H
 
-int thread_tests(void);
-void printf_tests(void);
+void hellomsmb(void);
 
 #endif
 
