@@ -26,7 +26,7 @@
 #include <err.h>
 #include <debug.h>
 #include <platform.h>
-#include "include/mmc.h"
+#include <mmc.h>
 #include <lib/bio.h>
 
 extern struct mmc_boot_host mmc_host;
