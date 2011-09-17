@@ -23,29 +23,23 @@
 #include <err.h>
 #include <debug.h>
 #include <platform.h>
-#include "platform_p.h"
-#include <platform/armemu.h>
+#include "mmc.h"
 #include <lib/bio.h>
 #include <reg.h>
 
 static bdev_t dev;
 
-static uint64_t get_blkdev_len(void)
-{
-	return *REG64(BDEV_LEN);
-}
-
 ssize_t read_block(struct bdev *dev, void *buf, bnum_t block, uint count)
 {
-	/* assume args have been validated by layer above */
-	*REG32(BDEV_CMD_ADDR) = (uint32_t)buf;
-	*REG64(BDEV_CMD_OFF) = (uint64_t)((uint64_t)block * dev->block_size);
-	*REG32(BDEV_CMD_LEN) = count * dev->block_size;
+	int ret;
 
-	*REG32(BDEV_CMD) = BDEV_CMD_READ;
+	unsigned int *out = (unsigned_int *)buf; // void *buf
+	unsigned int data_addr = (unsigned long long)block * dev->block_size;
+	unsigned int data_len = (unsigned int)count * dev->block_size;
+	ret = mmc_boot_read_from_card( &mmc_host, &mmc_card, data_addr, data_len, out);
+	
 
-	uint32_t err = *REG32(BDEV_CMD) & BDEV_CMD_ERRMASK;
-	if (err == BDEV_CMD_ERR_NONE)
+	if (ret == MMC_BOOT_E_SUCCESS)
 		return count * dev->block_size;
 	else
 		return ERR_IO;
@@ -53,36 +47,51 @@ ssize_t read_block(struct bdev *dev, void *buf, bnum_t block, uint count)
 
 ssize_t write_block(struct bdev *dev, const void *buf, bnum_t block, uint count)
 {
-	/* assume args have been validated by layer above */
-	*REG32(BDEV_CMD_ADDR) = (uint32_t)buf;
-	*REG64(BDEV_CMD_OFF) = (uint64_t)((uint64_t)block * dev->block_size);
-	*REG32(BDEV_CMD_LEN) = count * dev->block_size;
-
-	*REG32(BDEV_CMD) = BDEV_CMD_WRITE;
-
-	uint32_t err = *REG32(BDEV_CMD) & BDEV_CMD_ERRMASK;
-	if (err == BDEV_CMD_ERR_NONE)
-		return count * dev->block_size;
-	else
-		return ERR_IO;
+	/* write is not implemented */
+	return ERR_IO;
 }
 
-void platform_init_blkdev(void)
+int platform_init_blkdev_emmc(unsigned char slot, unsigned int base) {
 {
-	if ((*REG32(SYSINFO_FEATURES) & SYSINFO_FEATURE_BLOCKDEV) == 0)
-		return; // no block device
 
-	TRACEF("device len %lld\n", get_blkdev_len());
+    memset( (struct mmc_boot_host*)&mmc_host, 0, sizeof( struct mmc_boot_host ) );
+    memset( (struct mmc_boot_card*)&mmc_card, 0, sizeof(struct mmc_boot_card) );
 
-	if (get_blkdev_len() == 0)
-		return;
+    mmc_slot = slot;
+    mmc_boot_mci_base = base;
 
-	bio_initialize_bdev(&dev, "block0", 512, get_blkdev_len() / 512);
+    /* Initialize necessary data structure and enable/set clock and power */
+    dprintf(SPEW," Initializing MMC host data structure and clock!\n" );
+    mmc_ret = mmc_boot_init( &mmc_host );
+    if( mmc_ret != MMC_BOOT_E_SUCCESS )
+    {
+        dprintf(CRITICAL,  "MMC Boot: Error Initializing MMC Card!!!\n" );
+        return -1;
+    }
+
+    /* Initialize and identify cards connected to host */
+    mmc_ret = mmc_boot_init_and_identify_cards( &mmc_host, &mmc_card );
+    if( mmc_ret != MMC_BOOT_E_SUCCESS )
+    {
+        dprintf(CRITICAL, "MMC Boot: Failed detecting MMC/SDC @ slot%d\n",slot);
+        return -2;
+    }
+
+    mmc_display_csd();
+    mmc_display_ext_csd();
+
+    //mmc_ret = partition_read_table(&mmc_host, &mmc_card);
+    
+    /* now register the block device */
+    
+   	bio_initialize_bdev(&dev, "mmc0", 512, card->capacity / 512);
 
 	// fill in hooks
 	dev.read_block = &read_block;
 	dev.write_block = &write_block;
 
 	bio_register_device(&dev);
+    
+    return 0;
 }
 
