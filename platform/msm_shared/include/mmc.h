@@ -588,6 +588,8 @@ extern unsigned gpt_partitions_exist;
 #define MMC_CLK_ENABLE      1
 #define MMC_CLK_DISABLE     0
 
+extern unsigned char mmc_slot;
+extern unsigned int mmc_boot_mci_base;
 
 unsigned int mmc_boot_main (unsigned char slot, unsigned int base);
 unsigned int mmc_boot_read_from_card (struct mmc_boot_host* host,

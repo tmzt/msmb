@@ -28,9 +28,6 @@
 #include <platform.h>
 #include "include/mmc.h"
 #include <lib/bio.h>
-#include <reg.h>
-
-unsigned char mmc_slot = 0;
 
 extern struct mmc_boot_host mmc_host;
 extern struct mmc_boot_card mmc_card;
@@ -57,7 +54,7 @@ ssize_t write_block(struct bdev *dev, const void *buf, bnum_t block, uint count)
 	return ERR_IO;
 }
 
-int platform_init_blkdev_emmc(unsigned char slot, unsigned int base) {
+int platform_init_blkdev_emmc(unsigned char slot, unsigned int base)
 {
 	int mmc_ret;
 
