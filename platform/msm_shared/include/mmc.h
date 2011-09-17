@@ -612,5 +612,10 @@ unsigned int mmc_write_partition (unsigned size, unsigned char *partition);
 unsigned int mmc_write_mbr_in_blocks(unsigned size, unsigned char *mbrImage);
 unsigned int mmc_write_mbr(unsigned size, unsigned char *mbrImage);
 
+void mmc_display_ext_csd(void);
+void mmc_display_csd(void);
+unsigned int mmc_boot_init( struct mmc_boot_host* );
+unsigned int mmc_boot_init_and_identify_cards( struct mmc_boot_host*, struct mmc_boot_card* );
+
 #endif
 

@@ -20,26 +20,32 @@
  * TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE
  * SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+#include <string.h>
+ 
 #include <err.h>
 #include <debug.h>
 #include <platform.h>
-#include "mmc.h"
+#include "include/mmc.h"
 #include <lib/bio.h>
 #include <reg.h>
 
+unsigned char mmc_slot = 0;
+
+extern struct mmc_boot_host mmc_host;
+extern struct mmc_boot_card mmc_card;
 static bdev_t dev;
 
 ssize_t read_block(struct bdev *dev, void *buf, bnum_t block, uint count)
 {
-	int ret;
+	int mmc_ret;
 
-	unsigned int *out = (unsigned_int *)buf; // void *buf
+	unsigned int *out = (unsigned int *)buf; // void *buf
 	unsigned int data_addr = (unsigned long long)block * dev->block_size;
 	unsigned int data_len = (unsigned int)count * dev->block_size;
-	ret = mmc_boot_read_from_card( &mmc_host, &mmc_card, data_addr, data_len, out);
+	mmc_ret = mmc_boot_read_from_card( &mmc_host, &mmc_card, data_addr, data_len, out);
 	
-
-	if (ret == MMC_BOOT_E_SUCCESS)
+	if (mmc_ret == MMC_BOOT_E_SUCCESS)
 		return count * dev->block_size;
 	else
 		return ERR_IO;
@@ -53,6 +59,7 @@ ssize_t write_block(struct bdev *dev, const void *buf, bnum_t block, uint count)
 
 int platform_init_blkdev_emmc(unsigned char slot, unsigned int base) {
 {
+	int mmc_ret;
 
     memset( (struct mmc_boot_host*)&mmc_host, 0, sizeof( struct mmc_boot_host ) );
     memset( (struct mmc_boot_card*)&mmc_card, 0, sizeof(struct mmc_boot_card) );
@@ -84,7 +91,7 @@ int platform_init_blkdev_emmc(unsigned char slot, unsigned int base) {
     
     /* now register the block device */
     
-   	bio_initialize_bdev(&dev, "mmc0", 512, card->capacity / 512);
+   	bio_initialize_bdev(&dev, "mmc0", 512, mmc_card.capacity / 512);
 
 	// fill in hooks
 	dev.read_block = &read_block;

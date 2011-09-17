@@ -639,6 +639,7 @@ static unsigned int mmc_boot_send_op_cond( struct mmc_boot_host* host,
      * [23:15] 2.7-3.6
      * [14:8]  2.0-2.6
      * [7]     1.7-1.95
+
      * [6:0]   reserved
      */
 
@@ -1933,7 +1934,7 @@ static unsigned int mmc_boot_sd_init_card(struct mmc_boot_card* card)
  * Routine to initialize MMC card. It resets a card to idle state, verify operating
  * voltage and set the card inready state.
  */
-static unsigned int mmc_boot_init_card( struct mmc_boot_host* host,
+unsigned int mmc_boot_init_card( struct mmc_boot_host* host,
         struct mmc_boot_card* card )
 {
     unsigned int mmc_retry = 0;
@@ -2084,7 +2085,7 @@ static unsigned int mmc_boot_set_sd_hs(struct mmc_boot_host* host, struct mmc_bo
  * to the host.
  */
 
-static unsigned int mmc_boot_init_and_identify_cards( struct mmc_boot_host* host, struct mmc_boot_card* card )
+unsigned int mmc_boot_init_and_identify_cards( struct mmc_boot_host* host, struct mmc_boot_card* card )
 {
     unsigned int mmc_return = MMC_BOOT_E_SUCCESS;
     unsigned int status;
