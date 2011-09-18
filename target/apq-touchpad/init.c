@@ -45,7 +45,7 @@
 #define USE_BIO_BOOT 1
 
 #if USE_BIO_BOOT
-int platform_init_blkdev_emmc(unsigned char slot, unsigned int base)
+int platform_init_blkdev_emmc(unsigned char slot, unsigned int base);
 #else
 extern unsigned int mmc_boot_main(unsigned char slot, unsigned int base);
 #endif
@@ -83,7 +83,7 @@ void target_init(void)
 	slot = 1;
 	base_addr = mmc_sdc_base[slot-1];
 #if USE_BIO_BOOT
-	if(platform_init_blkdev_emmc(unsigned char slot, unsigned int base))
+	if(platform_init_blkdev_emmc(slot, base_addr))
 #else
 	if(mmc_boot_main(slot, base_addr))
 #endif
@@ -92,7 +92,7 @@ void target_init(void)
 		slot = 3;
 		base_addr = mmc_sdc_base[slot-1];
 		#if USE_BIO_BOOT
-			if(platform_init_blkdev_emmc(unsigned char slot, unsigned int base))
+			if(platform_init_blkdev_emmc(slot, base_addr))
 		#else
 			if(mmc_boot_main(slot, base_addr))
 		#endif
