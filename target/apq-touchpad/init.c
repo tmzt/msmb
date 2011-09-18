@@ -42,7 +42,13 @@
 
 #define LINUX_MACHTYPE_APQ8064_SIM     3572
 
+#define USE_BIO_BOOT 1
+
+#if USE_BIO_BOOT
+int platform_init_blkdev_emmc(unsigned char slot, unsigned int base);
+#else
 extern unsigned int mmc_boot_main(unsigned char slot, unsigned int base);
+#endif
 extern void mdelay(unsigned msecs);
 extern void keypad_init(void);
 extern void display_init(void);
@@ -80,12 +86,20 @@ void target_init(void)
 	/* Trying Slot 1 first */
 	slot = 1;
 	base_addr = mmc_sdc_base[slot-1];
+#if USE_BIO_BOOT
+	if(platform_init_blkdev_emmc(slot, base_addr))
+#else
 	if(mmc_boot_main(slot, base_addr))
+#endif
 	{
 		/* Trying Slot 3 next */
 		slot = 3;
 		base_addr = mmc_sdc_base[slot-1];
-		if(mmc_boot_main(slot, base_addr))
+		#if USE_BIO_BOOT
+			if(platform_init_blkdev_emmc(slot, base_addr))
+		#else
+			if(mmc_boot_main(slot, base_addr))
+		#endif
 		{
 			dprintf(CRITICAL, "mmc init failed!");
 			ASSERT(0);

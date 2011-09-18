@@ -30,6 +30,12 @@
 #include <platform.h>
 #include <target.h>
 #include <lib/heap.h>
+#if WITH_LIB_BIO
+#include <lib/bio.h>
+#endif
+#if WITH_LIB_FS
+#include <lib/fs.h>
+#endif
 #include <kernel/thread.h>
 #include <kernel/timer.h>
 #include <kernel/dpc.h>
