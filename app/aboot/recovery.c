@@ -37,8 +37,8 @@
 #include <lib/ptable.h>
 #include <dev/keys.h>
 #include <platform.h>
-#include <partition_parser.h>
 #include <mmc.h>
+#include <partition_parser.h>
 
 #include "recovery.h"
 #include "bootimg.h"
